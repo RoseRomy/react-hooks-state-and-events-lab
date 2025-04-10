@@ -1,30 +1,26 @@
-import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
-import App from "../components/App";
+import { render, screen, fireEvent, findByClassName } from '@testing-library/react';
+import App from "../App";
 
-test("displays in 'light' mode when initialized", () => {
-  const { container } = render(<App />);
-  expect(container.querySelector(".App.light")).toBeInTheDocument();
-});
+describe('App Component', () => {
+  test("displays in 'light' mode when initialized", () => {
+    render(<App />);
+    expect(screen.getByClassName('App light')).toBeInTheDocument();
+  });
 
-test("changes to 'dark' mode when the button is clicked", () => {
-  const { container } = render(<App />);
-  expect(container.querySelector(".App.light")).toBeInTheDocument();
+  test("changes to 'dark' mode when the button is clicked", async () => {
+    render(<App />);
+    const button = screen.getByText(/Mode/i); // Matches "Dark Mode" or "Light Mode"
+    fireEvent.click(button);
+    const darkAppElement = await findByClassName(screen.container, 'App dark');
+    expect(darkAppElement).toBeInTheDocument();
+  });
 
-  fireEvent.click(screen.getByText(/ Mode/));
-
-  expect(container.querySelector(".App.dark")).toBeInTheDocument();
-});
-
-test("changes back to 'light' mode when the button is clicked twice", () => {
-  const { container } = render(<App />);
-  expect(container.querySelector(".App.light")).toBeInTheDocument();
-
-  fireEvent.click(screen.getByText(/ Mode/));
-
-  expect(container.querySelector(".App.dark")).toBeInTheDocument();
-
-  fireEvent.click(screen.getByText(/ Mode/));
-
-  expect(container.querySelector(".App.light")).toBeInTheDocument();
+  test("changes back to 'light' mode when the button is clicked twice", async () => {
+    render(<App />);
+    const button = screen.getByText(/Mode/i);
+    fireEvent.click(button);
+    fireEvent.click(button);
+    const lightAppElement = await findByClassName(screen.container, 'App light');
+    expect(lightAppElement).toBeInTheDocument();
+  });
 });
